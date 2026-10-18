@@ -26,7 +26,7 @@ def load_data():
 
     # Référentiel communes
     geo_df = pd.read_excel(
-        "/Users/alphadiallo/Downloads/info-complements-data.gouv-2025-geographie2026-produit-le2026-06-25.xlsx"
+    "references/info-complements-data.gouv-2025-geographie2026-produit-le2026-06-25.xlsx"
     )
 
     # Harmonisation des codes communes
