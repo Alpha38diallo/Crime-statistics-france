@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
+
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
 # ==================================================
 # CONFIGURATION
@@ -18,15 +22,20 @@ st.set_page_config(
 @st.cache_data
 def load_data():
 
-    # Données délinquance
-    df = pd.read_csv(
-        "data/donnee-data.gouv-2025-geographie2026-produit-le2026-06-25.csv",
-        sep=";"
+    load_dotenv()
+
+    engine = create_engine(
+    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}?sslmode=require"
+    )
+    # Données délinquance depuis PostgreSQL
+    df = pd.read_sql(
+        "SELECT * FROM crime_stats",
+        engine
     )
 
     # Référentiel communes
     geo_df = pd.read_excel(
-    "references/info-complements-data.gouv-2025-geographie2026-produit-le2026-06-25.xlsx"
+        "references/info-complements-data.gouv-2025-geographie2026-produit-le2026-06-25.xlsx"
     )
 
     # Harmonisation des codes communes
@@ -60,9 +69,12 @@ def load_data():
 
     return df
 
-
 df = load_data()
 
+# Tes filtres Streamlit
+indicateurs = sorted(
+    df["indicateur"].dropna().unique()
+)
 # ==================================================
 # SIDEBAR
 # ==================================================
@@ -233,7 +245,7 @@ with col1:
 
     st.plotly_chart(
         fig_line,
-        use_container_width=True
+        width="stretch"
     )
 
 with col2:
@@ -274,7 +286,7 @@ with col2:
 
     st.plotly_chart(
         fig_pie,
-        use_container_width=True
+        width="stretch"
     )
 
 # ==================================================
@@ -329,5 +341,5 @@ fig_top_taux.update_traces(
 
 st.plotly_chart(
     fig_top_taux,
-    use_container_width=True
+    width="stretch"
 )
