@@ -29,7 +29,16 @@ def load_data():
     )
     # Données délinquance depuis PostgreSQL
     df = pd.read_sql(
-        "SELECT * FROM crime_stats",
+        """
+        SELECT
+            "CODGEO_2026",
+            annee,
+            indicateur,
+            nombre,
+            taux_pour_mille
+        FROM crime_stats
+        WHERE annee >= 2020
+        """,
         engine
     )
 
