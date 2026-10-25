@@ -36,7 +36,7 @@ def load_data():
             indicateur,
             nombre,
             taux_pour_mille
-        FROM crime_stats
+        WHERE annee >= 2025
         """,
         engine
     )
