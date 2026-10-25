@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+import time
 
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ def load_data():
     engine = create_engine(
     f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}?sslmode=require"
     )
+    start = time.time()
     # Données délinquance depuis PostgreSQL
     df = pd.read_sql(
         """
@@ -41,11 +43,17 @@ def load_data():
         """,
         engine
     )
+    print("Lecture PostgreSQL :", round(time.time() - start, 2), "s")
+
+    start = time.time()
 
     # Référentiel communes
     geo_df = pd.read_excel(
         "references/info-complements-data.gouv-2025-geographie2026-produit-le2026-06-25.xlsx"
     )
+    print("Lecture PostgreSQL :", round(time.time() - start, 2), "s")
+
+    start = time.time()
 
     # Harmonisation des codes communes
     df["CODGEO_2026"] = df["CODGEO_2026"].astype(str)
@@ -58,6 +66,7 @@ def load_data():
         right_on="CODGEO",
         how="left"
     )
+    print("Merge :", round(time.time() - start, 2), "s")
 
     # Conversion des colonnes numériques
     df["nombre"] = pd.to_numeric(
