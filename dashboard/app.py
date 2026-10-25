@@ -31,13 +31,12 @@ def load_data():
     df = pd.read_sql(
         """
         SELECT
-            "CODGEO_2026",
+           "CODGEO_2026",
             annee,
             indicateur,
             nombre,
             taux_pour_mille
         FROM crime_stats
-        WHERE annee >= 2025
         """,
         engine
     )
